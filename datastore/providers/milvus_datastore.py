@@ -139,7 +139,7 @@ class MilvusDataStore(DataStore):
             ].index({"host": MILVUS_HOST, "port": MILVUS_PORT})
             self.alias = connections.list_connections()[i][0]
         except ValueError:
-            # Connect to the Milvus instance using the passed in Enviroment variables
+            # Connect to the Milvus instance using the passed in Environment variables
             self.alias = uuid4().hex
             connections.connect(
                 alias=self.alias,
@@ -160,7 +160,7 @@ class MilvusDataStore(DataStore):
         )
 
     def _create_collection(self, create_new: bool) -> None:
-        """Create a collection based on enviroment and passed in variables.
+        """Create a collection based on environment and passed in variables.
 
         Args:
             create_new (bool): Whether to overwrite if collection already exists.
@@ -170,9 +170,9 @@ class MilvusDataStore(DataStore):
         if utility.has_collection(MILVUS_COLLECTION, using=self.alias) and create_new:
             utility.drop_collection(MILVUS_COLLECTION, using=self.alias)
 
-        # Check if the collection doesnt exist
+        # Check if the collection doesn't exist
         if utility.has_collection(MILVUS_COLLECTION, using=self.alias) is False:
-            # If it doesnt exist use the field params from init to create a new schem
+            # If it doesn't exist use the field params from init to create a new schema
             schema = [field[1] for field in SCHEMA]
             schema = CollectionSchema(schema)
             # Use the schema to create a new collection
@@ -205,14 +205,14 @@ class MilvusDataStore(DataStore):
 
                     self.col.create_index("embedding", index_params=i_p)
                     self.index_params = i_p
-                    print("Creation of Milvus default index succesful")
+                    print("Creation of Milvus default index successful")
                 # If create fails, most likely due to being Zilliz Cloud instance, try to create an AutoIndex
                 except MilvusException:
                     print("Attempting creation of Zilliz Cloud default index")
                     i_p = {"metric_type": "L2", "index_type": "AUTOINDEX", "params": {}}
                     self.col.create_index("embedding", index_params=i_p)
                     self.index_params = i_p
-                    print("Creation of Zilliz Cloud default index succesful")
+                    print("Creation of Zilliz Cloud default index successful")
         # If an index already exists, grab its params
         else:
             self.index_params = self.col.indexes[0].to_dict()['index_param']
@@ -267,7 +267,7 @@ class MilvusDataStore(DataStore):
                     print(f"Error upserting batch: {e}")
                     raise e
 
-        # This setting perfoms flushes after insert. Small insert == bad to use
+        # This setting performs flushes after insert. Small insert == bad to use
         # self.col.flush()
 
         return doc_ids
@@ -353,7 +353,7 @@ class MilvusDataStore(DataStore):
                 # Grab the values that correspond to our fields, ignore pk and embedding.
                 for x in [field[0] for field in SCHEMA[2:]]:
                     metadata[x] = hit.entity.get(x)
-                # If the source isnt valid, conver to None
+                # If the source isn't valid, convert to None
                 if metadata["source"] not in Source.__members__:
                     metadata["source"] = None
                 # Text falls under the DocumentChunk
@@ -387,7 +387,7 @@ class MilvusDataStore(DataStore):
 
         Args:
             ids (Optional[List[str]], optional): The document_ids to delete. Defaults to None.
-            filter (Optional[DocumentMetadataFilter], optional): The filter to delet by. Defaults to None.
+            filter (Optional[DocumentMetadataFilter], optional): The filter to delete by. Defaults to None.
             delete_all (Optional[bool], optional): Whether to drop the collection and recreate it. Defaults to None.
         """
         # If deleting all, drop and create the new collection
@@ -416,7 +416,7 @@ class MilvusDataStore(DataStore):
                 if len(ids) != 0:
                     # Delete the entries for each pk
                     res = self.col.delete(f"pk in [{','.join(ids)}]")
-                    # Incremet our deleted count
+                    # Increment our deleted count
                     delete_count += int(res.delete_count)  # type: ignore
 
         # Check if empty filter
@@ -436,7 +436,7 @@ class MilvusDataStore(DataStore):
                     # Increment our delete count
                     delete_count += int(res.delete_count)  # type: ignore
 
-        # This setting perfoms flushes after delete. Small delete == bad to use
+        # This setting performs flushes after delete. Small delete == bad to use
         # self.col.flush()
 
         return True
@@ -451,7 +451,7 @@ class MilvusDataStore(DataStore):
             Optional[str]: The filter if valid, otherwise None.
         """
         filters = []
-        # Go through all the fields and thier values
+        # Go through all the fields and their values
         for field, value in filter.dict().items():
             # Check if the Value is empty
             if value is not None:
