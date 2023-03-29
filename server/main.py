@@ -85,6 +85,12 @@ async def query_main(
         results = await datastore.query(
             request.queries,
         )
+        if len(results) > 0:
+            queryresplist = results[0].results
+            if queryresplist != None and len(queryresplist) > 0:
+                for resp in queryresplist:
+                    print(resp.text)
+
         return QueryResponse(results=results)
     except Exception as e:
         print("Error:", e)
