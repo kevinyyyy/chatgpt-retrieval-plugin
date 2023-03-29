@@ -89,7 +89,7 @@ async def query_main(
             queryresplist = results[0].results
             if queryresplist != None and len(queryresplist) > 0:
                 for resp in queryresplist:
-                    print(resp.text)
+                    print(resp.text + '\n')
 
         return QueryResponse(results=results)
     except Exception as e:
